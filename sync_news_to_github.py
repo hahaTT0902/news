@@ -132,10 +132,12 @@ def write_markdown(repo: pathlib.Path, items: Iterable[dict]) -> pathlib.Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_file = out_dir / f"{day}.md"
 
+    sgt = now.astimezone(dt.timezone(dt.timedelta(hours=8)))
     lines = [
         f"# News Sync - {day}",
         "",
         f"Generated at: {now.strftime('%Y-%m-%d %H:%M UTC')}",
+        f"Singapore time: {sgt.strftime('%Y-%m-%d %H:%M SGT')}",
         "",
     ]
 
@@ -166,8 +168,9 @@ def commit_and_push(repo: pathlib.Path, changed_file: pathlib.Path) -> None:
         print("No changes to commit.")
         return
 
-    day = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
-    run(["git", "commit", "-m", f"news: sync {day}"], cwd=repo)
+    now = dt.datetime.now(dt.timezone.utc)
+    sgt = now.astimezone(dt.timezone(dt.timedelta(hours=8)))
+    run(["git", "commit", "-m", f"news: sync {sgt.strftime('%Y-%m-%d %H:%M SGT')}"], cwd=repo)
     run(["git", "push", "origin", BRANCH], cwd=repo)
 
 
